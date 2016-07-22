@@ -17,7 +17,7 @@ neg = MyDict()
 features = set()
 totals = [0, 0]
 delchars = ''.join(c for c in map(chr, range(128)) if not c.isalnum())
-static_path = 'C:\Users\Akshay.Asawa\Desktop\hackathon\ce2016-bits-please\sentiment_analysis\myapp\sentiment_algo\\'
+static_path = 'C:\Users\Akshay.Asawa\Desktop\sentiment-analysis\sentiment_analysis\myapp\sentiment_algo\\'
 # CDATA_FILE = "countdata.pickle"
 FDATA_FILE = "reduceddata.pickle"
 
@@ -114,8 +114,7 @@ def feature_selection_trials():
     negi = 0
     totalsi = 0
     retrain = False
-    static_path = 'C:\Users\Akshay.Asawa\Desktop\hackathon\ce2016-bits-please\sentiment_analysis\myapp\sentiment_algo\\'
-
+    
     if not retrain and os.path.isfile(static_path + FDATA_FILE):
         posi, negi, totalsi = pickle.load(open(static_path + FDATA_FILE))
         return
