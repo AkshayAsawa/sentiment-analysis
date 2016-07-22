@@ -1,0 +1,95 @@
+
+<!DOCTYPE html>
+
+
+<html class="bgfull" lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+
+    <title>Analysis</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="/static/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/static/css/font-awesome.min.css" rel="stylesheet">
+    <link href="/static/css/amchartchart.css" rel="stylesheet">
+
+
+   <style>
+
+   #loading
+   {
+     margin-top:0px;
+   }
+
+   </style>
+
+</head>
+
+  <body id="drogon" style="background: url('/static/img/bg4.jpg') no-repeat center center fixed;">
+
+
+<!-- data -->
+<div style="float:left;margin-top:60px;margin-left:100px;color:#FFFFFF;">
+  <i class="fa fa-pied-piper fa-5x" aria-hidden="true"></i>
+</div>
+
+    <div class="container">
+        <div class="row">
+
+
+<h1 style="color:#FFFFFF;z-index:1000;text-align:center;margin-top:300px;">Sentiment Analysis and Statistics<br><br></h1>
+
+<div class="" style="margin:0 auto;width:25%;">
+<form id="form" class="navbar-form" action="/analysis/" method="post" style="align:center;">
+
+  <!--<div class="col-sm-3 col-md-6 col-md-offset-3">-->
+
+<div class="form-group">
+    <input type="text" class="form-control" name="tag" placeholder="Search product here" style="">
+</div>
+
+
+<div class="form-group">
+    <button id="submit" type="submit" class="btn btn-success" value="search" style="background-color:#164855;border-color:#164855;"><i class="fa fa-search" aria-hidden="true" onclick="$('#loading').show();"></i></button>
+</div>
+  <!--</div>-->
+
+</form>
+<!-- overlay -->
+
+    <div id="loading" style="display:none;">
+        <img style="margin-left:30%;margin-top:60px;" id="loadingimg" src="/static/img/Preloader.gif" alt="Loading..." >
+        <!-- <h4 style="color:#FFFFFF;margin-left:-25%;font-family:Sol Thin;"><b><i>Sit tight while we fetch feeds from Twitter and Google!</i></b></h4> -->
+    </div>
+</div>
+</div>
+</div>
+
+
+
+ <!-- Bootstrap core JavaScript
+================================================== -->
+<!-- Placed at the end of the document so the pages load faster -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<script>window.jQuery || document.write('<script src="/js/vendor/jquery.min.js"><\/script>')</script>
+<script src="/static/js/bootstrap.min.js"></script>
+<script src="/static/js/holder.min.js"></script>
+
+
+<script type="text/javascript">
+(function (d) {
+  d.getElementById('form').onsubmit = function () {
+    d.getElementById('submit').style.display = 'block';
+    d.getElementById('loading').style.display = 'block';
+  };
+}(document));
+</script>
+
+
+  </body>
+</html>

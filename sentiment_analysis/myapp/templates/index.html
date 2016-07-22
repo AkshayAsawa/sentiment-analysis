@@ -1,0 +1,281 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+
+    <title>Analysis</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="/static/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/static/css/font-awesome.min.css" rel="stylesheet">
+    <link href="/static/css/amchartchart.css" rel="stylesheet">
+
+
+
+</head>
+
+  <body>
+<!-- include navbar from separate navabr html page -->
+ {% include "navbar.html" %}
+
+
+  <!-- Name of product goes here -->
+  <div class="container-fluid" style="background-color:#04b099;color:#FFFFFF;height:150px;margin-top:10px;margin-bottom:50px;text-align:center;">
+  <h1 style="padding-top:60px;">Analysis for: {{tag}} </h1>
+  </div>
+
+
+ <div class="container-fluid" style="margin-top:50px;">
+     <div class="row">
+         <div class="col-lg-4">
+           <!-- pie chart -->
+           <div id="chartdiv"></div>
+           <table style="float:right;margin-top:-100px;margin-right:50px;">
+           <tr><td><i class="fa fa-square" aria-hidden="true" style="color:#63bc66;"></i></td><td>&nbsp;Positive</td>
+           <tr><td><i class="fa fa-square" aria-hidden="true" style="color:#e15f6a;"></i></td><td>&nbsp;Negative</td>
+           <tr><td><i class="fa fa-square" aria-hidden="true" style="color:#fbbc05;"></i></td><td>&nbsp;Neutral</td>
+           </table>
+         </div>
+         <div class="col-lg-8">
+           <!-- timeline chart -->
+           <div id="chartdiv1" style="margin-top:60px;"></div>
+         </div>
+     </div>
+ </div>
+
+<!--  -->
+
+
+<div class="container-fluid" style="margin-top:100px;">
+    <div class="row">
+        <div class="col-lg-6">
+          <h4 style="text-align:center;">Twitter Feed</h4>
+
+           <a class="twitter-timeline"  href="https://twitter.com/hashtag/{{for_twitter}}" data-widget-id="756091891238653952" data-screen-name="{{for_twitter}}">#{{tag}} Tweets</a>
+           <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+
+        </div>
+
+
+        <div class="col-lg-6">
+
+          <h4 style="text-align:center;">Articles</h4>
+
+          <table class='table table-striped' style="text-align:center;">
+            <tr>
+              <th style="text-align:center;">
+                Title
+              </th>
+              <th style="text-align:center;">
+                Positivity
+              </th>
+            </tr>
+
+            {% for g_a in google_articles %}
+             <tr>
+                 <td style="text-align:center;">
+                   <a href="{{g_a.url}}">{{g_a.title}}</a>
+                 </td>
+                 <td style="text-align:center;">
+                   {{g_a.pos_percentage}}
+                 </td>
+             </tr>
+            {% endfor %}
+          </table>
+
+        </div>
+
+
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ <div class="container-fluid" style="margin-top:50px;text-align:center;">
+     <div class="row">
+         <div class="col-lg-6" style="">
+
+         </div>
+     </div>
+ </div>
+
+
+
+{% include "footer.html" %}
+
+
+
+
+ <!-- Bootstrap core JavaScript
+================================================== -->
+<!-- Placed at the end of the document so the pages load faster -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<script>window.jQuery || document.write('<script src="/js/vendor/jquery.min.js"><\/script>')</script>
+<script src="/static/js/bootstrap.min.js"></script>
+<script src="/static/js/holder.min.js"></script>
+<script src="/static/amcharts/amcharts.js" type="text/javascript"></script>
+<script src="/static/amcharts/serial.js" type="text/javascript"></script>
+<script src="/static/amcharts/themes/light.js" type="text/javascript"></script>
+<script src="/static/amcharts/themes/dark.js" type="text/javascript"></script>
+<script src="/static/amcharts/pie.js" type="text/javascript"></script>
+
+
+
+
+
+
+<script type="text/javascript">
+var chart = AmCharts.makeChart( "chartdiv", {
+  "type": "pie",
+  "theme": "default",
+  "dataProvider": [ {
+    "title": "Positive",
+    "value": {{pos_percentage}}
+  }, {
+    "title": "Negative",
+    "value": {{neg_percentage}}
+  },{
+    "title": "Neutral",
+    "value": {{neu_percentage}}
+  } ],
+  "titleField": "title",
+  "valueField": "value",
+  "labelRadius": 5,
+
+  "radius": "40%",
+  "innerRadius": "60%",
+  "labelText": "",
+  "export": {
+    "enabled": true
+  }
+} );
+</script>
+
+
+<script>
+var chart = AmCharts.makeChart("chartdiv1", {
+    "type": "serial",
+    "theme": "dark",
+    "marginRight": 40,
+    "marginLeft": 40,
+    "autoMarginOffset": 20,
+    "mouseWheelZoomEnabled":true,
+    "dataDateFormat": "YYYY-MM-DD",
+    "valueAxes": [{
+        "id": "v1",
+        "axisAlpha": 0,
+        "position": "left",
+        "ignoreAxisWidth":true
+    }],
+    "balloon": {
+        "borderThickness": 1,
+        "shadowAlpha": 0
+    },
+    "graphs": [{
+        "id": "g1",
+        "balloon":{
+          "drop":true,
+          "adjustBorderColor":false,
+          "color":"#ffffff"
+        },
+        "bullet": "round",
+        "bulletBorderAlpha": 1,
+        "bulletColor": "#FFFFFF",
+        "bulletSize": 5,
+        "hideBulletsCount": 50,
+        "lineThickness": 2,
+        "title": "red line",
+        "useLineColorForBulletBorder": true,
+        "valueField": "value",
+        "balloonText": "<span style='font-size:18px;'>[[value]]</span>"
+    }],
+    "chartScrollbar": {
+        "graph": "g1",
+        "oppositeAxis":false,
+        "offset":30,
+        "scrollbarHeight": 80,
+        "backgroundAlpha": 0,
+        "selectedBackgroundAlpha": 0.1,
+        "selectedBackgroundColor": "#888888",
+        "graphFillAlpha": 0,
+        "graphLineAlpha": 0.5,
+        "selectedGraphFillAlpha": 0,
+        "selectedGraphLineAlpha": 1,
+        "autoGridCount":true,
+        "color":"#AAAAAA"
+    },
+    "chartCursor": {
+        "pan": true,
+        "valueLineEnabled": true,
+        "valueLineBalloonEnabled": true,
+        "cursorAlpha":1,
+        "cursorColor":"#258cbb",
+        "limitToGraph":"g1",
+        "valueLineAlpha":0.2,
+        "valueZoomable":true
+    },
+    "valueScrollbar":{
+      "oppositeAxis":false,
+      "offset":50,
+      "scrollbarHeight":10
+    },
+    "categoryField": "date",
+    "categoryAxis": {
+        "parseDates": true,
+        "dashLength": 1,
+        "minorGridEnabled": true
+    },
+    "export": {
+        "enabled": true
+    },
+    "dataProvider": [
+
+        {
+          "date": "2016-07-12",
+          "value": 0
+      },
+      {% for k,v in date_wise %}
+        {
+          "date": "{{k}}",
+          "value": {{v}}
+        },
+      {% endfor %}
+]
+});
+
+chart.addListener("rendered", zoomChart);
+
+zoomChart();
+
+function zoomChart() {
+    chart.zoomToIndexes(chart.dataProvider.length - 40, chart.dataProvider.length - 1);
+}
+</script>
+
+
+
+
+
+  </body>
+</html>

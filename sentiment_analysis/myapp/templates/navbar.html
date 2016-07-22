@@ -1,0 +1,72 @@
+{% load staticfiles %}
+
+<style>
+  {% block style %}
+    .navbar
+    {
+      background-color:#0c333d;
+    }
+
+
+    .navbar .nav > li > a
+    {
+      color:#FFFFFF;
+    }
+
+    .navbar .nav > li > a:hover
+    {
+      color:#b4e0e1;
+    }
+
+
+  {% endblock %}
+</style>
+
+    <nav class="navbar navbar-default navbar-fixed-top">
+      <div class="container-fluid" >
+        <div class="navbar-header" style="margin-left:80px;">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/landing/" style="color:#FFFFFF;"><i class="fa fa-pied-piper " aria-hidden="true" style="color:#FFFFFF;"></i>&nbsp;Cognition</a>
+
+            </div>
+
+
+     <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav" >
+            <li><a href="/team" >Team</a></li>
+            <!--     <li><a href="/" >Page2</a></li>
+            <li><a href="/" >Page3</a></li> -->
+          </ul>
+
+          <ul class="nav navbar-nav navbar-right" style="margin-right:100px;">
+
+            <form class="navbar-form navbar-right" action="/analysis/" method="post" >
+
+              <!--<div class="col-sm-3 col-md-6 col-md-offset-3">-->
+
+            <div class="form-group">
+                <input type="text" class="form-control" name="tag" placeholder="Search product here">
+            </div>
+
+
+            <div class="form-group">
+                <button type="submit" class="btn btn-success" value="search" style="background-color:#164855;border-color:#164855;">Search</button>
+            </div>
+              <!--</div>-->
+
+            </form>
+
+      </ul>
+
+        </div><!--/.nav-collapse -->
+
+
+
+
+</div>
+</nav>
