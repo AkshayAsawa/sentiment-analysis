@@ -17,7 +17,7 @@ neg = MyDict()
 features = set()
 totals = [0, 0]
 delchars = ''.join(c for c in map(chr, range(128)) if not c.isalnum())
-static_path = 'C:\Users\Akshay.Asawa\Desktop\sentiment-analysis\sentiment_analysis\myapp\sentiment_algo\\'
+static_path = os.path.dirname(os.path.abspath(__file__)) + '\\'
 # CDATA_FILE = "countdata.pickle"
 FDATA_FILE = "reduceddata.pickle"
 
