@@ -61,9 +61,6 @@ def negate_sequence(text):
     return result
 
 def classify2(text):
-
-
-
     """
     For classification from pretrained data
     """
@@ -88,37 +85,6 @@ def main_classify(text_list):
         return_list.append({'text': text, 'score':int(sentiment), 'confidence':conf})
     return return_list
 
-
-
-def classify_demo(text):
-    words = set(word for word in negate_sequence(text) if word in pos or word in neg)
-    if (len(words) == 0):
-        print "No features to compare on"
-        return True
-
-    pprob, nprob = 0, 0
-    for word in words:
-        pp = log((pos[word] + 1) / (2 * totals[0]))
-        np = log((neg[word] + 1) / (2 * totals[1]))
-        print "%15s %.9f %.9f" % (word, exp(pp), exp(np))
-        pprob += pp
-        nprob += np
-
-    print ("Positive" if pprob > nprob else "Negative"), "log-diff = %.9f" % abs(pprob - nprob)
-
-def feature_selection_trials():
-    """
-    Select top k features. Vary k and plot data
-    """
-    posi = 0
-    negi = 0
-    totalsi = 0
-    retrain = False
-    
-    if not retrain and os.path.isfile(static_path + FDATA_FILE):
-        posi, negi, totalsi = pickle.load(open(static_path + FDATA_FILE))
-        return
-
 def setup():
 
     global pos, neg, totals, features
@@ -141,7 +107,6 @@ def setup():
                     score += i[x]
                 else:
                     sentence += i[x]
-            # print sentence[::-1],score[::-1]
             pos[sentence[::-1]] = int(score[::-1])
 
     for i in t_neg:
@@ -159,8 +124,6 @@ def setup():
                 elif found == 1:
                     sentence += i[x]
             neg[sentence[::-1]] = int(score[::-1])
-        else:
-            print "HOLAA"
 
 
 def main(text_list):

@@ -3,29 +3,11 @@ from django.http import Http404
 from django.views.decorators.csrf import csrf_exempt
 from myapp import config
 from myapp.sentiment_algo import info, search_google
-import requests, unirest, datetime, collections, json
-import tweepy
+import requests, unirest, datetime, collections, json, tweepy, urllib2, lxml
 from tweepy import OAuthHandler
 from tweepy import Stream
 from tweepy.streaming import StreamListener
 from bs4 import BeautifulSoup
-import urllib2
-import lxml
-
-class MyListener(StreamListener):
-
-    def on_data(self, data):
-        try:
-            with open('python.json', 'a') as f:
-                f.write(data)
-                return True
-        except BaseException as e:
-            print("Error on_data: %s" % str(e))
-        return True
-
-    def on_error(self, status):
-        print(status)
-        return True
 
 def landing(request):
     return render(request, 'landing.html', {})
@@ -39,35 +21,20 @@ def landing_re(request):
 @csrf_exempt
 def home(request):
     context = {}
-    print "lets see"
     if request.POST:
-        url = 'https://community-sentiment.p.mashape.com/text/'
-        url2 = 'http://www.sentiment140.com/api/bulkClassifyJson?appid=akshayasawa94@gmail.com'
-        url3 = 'http://twittersentiment.appspot.com/api/bulkClassify'
-        url4 = 'http://sentiment.vivekn.com/api/batch/'
-
-        context['tag'] = request.POST['tag']
-        tweet_l = get_tweets(str(request.POST['tag']))
+        print "Fetching Tweets..."
+        tag = request.POST['tag']
+        tweet_l = get_tweets(str(tag))
         context['tweets'] = []
-        p_data = {"data":[]}
-        vivekn_data = []
         senti_list = []
         an_hour_of_tweets = ''
         splitter = "#$#$#$#$#$#$#$#$"
-        dbg = 1
         for i, tweet in enumerate(tweet_l):
             if 'RT @' in tweet.text:
+                # Ignoring retweets
                 continue
-            p_data['data'].append({"text": tweet.text})
-            # print dbg
-            # dbg += 1
             tweet.text = ''.join(tweet.text.split('\n'))
-            an_hour_of_tweets += tweet.text + splitter + str(tweet.created_at)[0:10] + '\n'
-            vivekn_data.append({'txt':tweet.text})
             senti_list.append(tweet.text + splitter + str(tweet.created_at)[0:10])
-            # print str(tweet.created_at)[0:10]
-
-        an_hour_of_tweets = an_hour_of_tweets.encode('utf8', 'xmlcharrefreplace')
 
         rows = info.main(senti_list)
         ct = 1
@@ -75,7 +42,6 @@ def home(request):
         neg = 0
         neu = 0
         date_wise_dict = {}
-
         for row in rows:
             if not row == '':
                 score = row['score']
@@ -83,7 +49,7 @@ def home(request):
                 temp2 = temp.split(splitter)
                 sentence = temp2[0].strip('"')
                 if len(temp2) < 2:
-                    print "Date was not found\n\n", temp2, "\n\n", row, "\n\n"
+                    # Date Not Present
                     continue
                 date = temp2[1].strip('"')
                 if not date in date_wise_dict:
@@ -106,7 +72,6 @@ def home(request):
             neu_score = 0
             total_score = 0
             for i in v:
-                # print i['score'], 'score printing'
                 total_score += 1
                 if i['score'] == 0:
                     neg_score += 1
@@ -115,43 +80,31 @@ def home(request):
                     total_score -= 1
                 elif i['score'] == 4:
                     pos_score += 1
-            # print k, pos_score
             if total_score != 0:
                 c_date_wise[key] = pos_score * 100 / total_score
             else:
                 c_date_wise[key] = 0
-        # print c_date_wise
+
         od_date_wise = sorted(c_date_wise.items())
-        # print "od_dict -- ", od_date_wise
         context['dates'] = []
         context['date_wise_score'] = []
         for i in od_date_wise:
-            # print i[0], i[1]
             context['dates'].append(str(i[0])[0:10])
             context['date_wise_score'].append(int(i[1]))
 
-        context['pos_percentage'] = pos * 100 / ct
-        context['neg_percentage'] = neg * 100 / ct
-        context['neu_percentage'] = neu * 100 / ct
-        context['date_wise'] = zip(context['dates'], context['date_wise_score'])
-
-
-
         # Google scraping starts from here
-        print "GOOGLE RESULTS FROM HERE------------------------------------------------------------\n\n\n"
-        search_term = request.POST['tag'] + ' reviews'
+        print "Fetching Google Results..."
+        search_term = tag + ' reviews'
         google_result = get_google_results(search_term)
         context['google_articles'] = []
         for g_r in google_result:
-            print g_r[0]
-            print "URL  -- ", g_r[1]
+            print "Analysing website:", g_r[1]
             p_l, li_l = get_bs(g_r[1])
             final_l = zip(p_l, li_l)
             sentiment_p = info.main(final_l)
             total = 0
             positive = 0
             for i in sentiment_p:
-                print i['score']," - - \n\n"
                 total += 1
                 if i['score'] == 4:
                     positive += 1
@@ -161,6 +114,12 @@ def home(request):
             if total != 0:
                 pos_per = positive * 100 / total
             context['google_articles'].append({'title': g_r[0], 'url': g_r[1], 'pos_percentage': pos_per})
+
+        context['tag'] = tag
+        context['pos_percentage'] = pos * 100 / ct
+        context['neg_percentage'] = neg * 100 / ct
+        context['neu_percentage'] = neu * 100 / ct
+        context['date_wise'] = zip(context['dates'], context['date_wise_score'])
         context['for_twitter'] = ''.join(request.POST['tag'].split())
     return render(request,'index.html',context)
 
@@ -170,7 +129,6 @@ def auth_twitter():
     return auth
 
 def get_tweets(query):
-
         auth = auth_twitter()
         api = tweepy.API(auth)
         date = datetime.datetime.today()
@@ -178,10 +136,8 @@ def get_tweets(query):
         for i in range(8):
             until_date = str(date - datetime.timedelta(days=i))[0:10]
             temp = api.search(q=query, lang='en', count=100, until=until_date)
-            print until_date, "until date"
+            print "Tweets of Date:", until_date
             results.extend(temp)
-
-        print len(results), " -- -- -- -- "
         return results
 
 
@@ -189,9 +145,7 @@ def get_google_results(search_term):
     return search_google.main(search_term)
 
 def get_bs(url):
-    print 'i am here ', url
     url_home_tr = url
-    #print url_home_tr
     response_home_tr = requests.get(url_home_tr)
     html_home_tr = response_home_tr.content
     soup_home_tr = BeautifulSoup(html_home_tr,'lxml')
@@ -199,11 +153,8 @@ def get_bs(url):
     li_list = soup_home_tr.find_all('li')
     p_final = []
     li_final = []
-    print p_list
     for i in p_list:
         p_final.append(str(i.contents))
-
     for i in li_list:
         li_final.append(str(i.contents))
-
     return p_final, li_final
